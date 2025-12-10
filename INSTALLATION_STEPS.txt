@@ -1,0 +1,127 @@
+# Installation Steps for MiniPOS2
+
+This guide will walk you through the process of setting up the MiniPOS2 project on your local machine. This project consists of a Laravel 12 backend and a Vue.js 3 frontend.
+
+## Prerequisites
+
+Before you begin, ensure you have the following installed:
+
+*   **PHP:** Version 8.2 or higher.
+*   **Composer:** For managing PHP dependencies.
+*   **Node.js:** Version 18 or higher (includes npm).
+*   **npm or Yarn:** For managing JavaScript dependencies.
+*   **MySQL:** Database server.
+*   **Git:** For cloning the repository.
+
+## Step 1: Clone the Repository (If not already done)
+
+If you haven't already, clone the project repository to your local machine:
+
+```bash
+git clone <repository_url>
+cd MiniPOS2
+```
+
+## Step 2: Backend Setup (Laravel)
+
+1.  **Install PHP Dependencies:**
+    Navigate to the project root directory (`MiniPOS2/`) and install the Composer dependencies:
+    ```bash
+    composer install
+    ```
+
+2.  **Environment Configuration:**
+    Copy the example environment file and generate an application key:
+    ```bash
+    cp .env.example .env
+    php artisan key:generate
+    ```
+    Open the `.env` file and configure your database connection. Replace `<your_database_name>`, `<your_database_user>`, and `<your_database_password>` with your actual MySQL credentials.
+
+    ```dotenv
+    DB_CONNECTION=mysql
+    DB_HOST=127.0.0.1
+    DB_PORT=3306
+    DB_DATABASE=<your_database_name>
+    DB_USERNAME=<your_database_user>
+    DB_PASSWORD=<your_database_password>
+    ```
+
+3.  **Create Database and Run Migrations:**
+    Create a new MySQL database for the project (e.g., `minipos2_db`). Then, run the database migrations to create the necessary tables:
+    ```bash
+    php artisan migrate
+    ```
+
+4.  **Seed the Database (Optional but recommended for development):**
+    Populate the database with some initial data (users, categories, products):
+    ```bash
+    php artisan db:seed
+    ```
+
+5.  **Start the Laravel Development Server:**
+    ```bash
+    php artisan serve
+    ```
+    This will typically start the backend server at `http://127.0.0.1:8000`.
+
+## Step 3: Frontend Setup (Vue.js)
+
+1.  **Install JavaScript Dependencies:**
+    Navigate to the project root directory (`MiniPOS2/`) and install the npm dependencies:
+    ```bash
+    npm install
+    # or if you use Yarn
+    # yarn install
+    ```
+    Also, install Flowbite for UI components:
+    ```bash
+    npm install flowbite
+    ```
+    (Flowbite is imported in `resources/js/app.js` and its `initFlowbite()` function is called in relevant components for dynamic initialization).
+
+2.  **Build and Run the Frontend:**
+    Start the Vite development server for the Vue.js frontend:
+    ```bash
+    npm run dev
+    # or if you use Yarn
+    # yarn dev
+    ```
+    This will typically start the frontend server at `http://localhost:5173` (or another available port).
+
+### Frontend Routing
+The application uses Vue Router for navigation. The main routing configuration is located at `resources/js/router/index.js`.
+
+### Pinia Stores
+The application uses Pinia for state management. Key stores include:
+*   `resources/js/stores/auth.js`: Handles user authentication state, including token and user information.
+*   `resources/js/stores/cart.js`: Manages the shopping cart state for the POS system.
+
+### Main Vue Application Entry Points
+The root Vue component is `resources/js/App.vue`, and the main JavaScript entry point is `resources/js/app.js`. These are served by Laravel's `resources/views/app.blade.php`.
+
+The default Laravel welcome page (`resources/views/welcome.blade.php`) has been removed as it's not used in this SPA setup.
+
+
+## Step 4: Access the Application
+
+Once both the Laravel backend and Vue.js frontend servers are running, you can access the application in your web browser, usually at the address provided by the `npm run dev` (or `yarn dev`) command (e.g., `http://localhost:5173`).
+
+You should now be able to log in using the seeded user credentials (if you ran `php artisan db:seed`). Check `database/seeders/UserSeeder.php` for default user credentials.
+
+## Troubleshooting
+
+*   **Permissions Issues:** If you encounter issues related to file permissions, try running:
+    ```bash
+    chmod -R 775 storage bootstrap/cache
+    chown -R www-data:www-data storage bootstrap/cache # Adjust user/group if not using www-data
+    ```
+*   **Composer/npm/Yarn Errors:** Ensure your internet connection is stable and try clearing caches:
+    ```bash
+    composer clear-cache
+    npm cache clean --force # or yarn cache clean
+    ```
+*   **Database Connection Errors:** Double-check your `.env` file for correct database credentials.
+*   **Vite build errors:** Make sure `npm install` finished successfully.
+
+That's it! You should now have the MiniPOS2 application running locally.

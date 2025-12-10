@@ -1,0 +1,78 @@
+Database Schema Analysis
+
+This analysis is based on the Vue forms and components in the `resources/js/pages/` and `resources/js/components/` directories.
+
+---
+
+**Table: `users`**
+*   `id` (Primary Key, Auto-increment, Integer)
+*   `name` (String, e.g., VARCHAR(255))
+*   `email` (String, e.g., VARCHAR(255), Unique)
+*   `password` (String, e.g., VARCHAR(255) for hashed password)
+*   `role` (String, e.g., VARCHAR(50), e.g., 'Admin', 'Manager', 'Staff')
+*   `status` (String, e.g., VARCHAR(50), e.g., 'active', 'inactive')
+*   `avatar_url` (String, e.g., TEXT or VARCHAR(255), Nullable)
+*   `created_at` (Timestamp)
+*   `updated_at` (Timestamp)
+
+**Table: `categories`**
+*   `id` (Primary Key, Auto-increment, Integer)
+*   `name` (String, e.g., VARCHAR(255), Unique)
+*   `created_at` (Timestamp)
+*   `updated_at` (Timestamp)
+
+**Table: `units`**
+*   `id` (Primary Key, Auto-increment, Integer)
+*   `name` (String, e.g., VARCHAR(255), Unique)
+*   `created_at` (Timestamp)
+*   `updated_at` (Timestamp)
+
+**Table: `products`**
+*   `id` (Primary Key, Auto-increment, Integer)
+*   `name` (String, e.g., VARCHAR(255))
+*   `description` (Text, Nullable)
+*   `category_id` (Foreign Key to `categories.id`, Integer)
+*   `unit_id` (Foreign Key to `units.id`, Integer)
+*   `stock_quantity` (Integer, Default 0)
+*   `selling_price` (Decimal, e.g., DECIMAL(10, 2))
+*   `cost_price` (Decimal, e.g., DECIMAL(10, 2))
+*   `image_url` (String, e.g., TEXT or VARCHAR(255), Nullable)
+*   `created_at` (Timestamp)
+*   `updated_at` (Timestamp)
+
+**Table: `stock_imports`**
+*   `id` (Primary Key, Auto-increment, Integer)
+*   `import_date` (Date)
+*   `product_id` (Foreign Key to `products.id`, Integer)
+*   `quantity` (Integer)
+*   `cost_per_unit` (Decimal, e.g., DECIMAL(10, 2))
+*   `selling_price_at_import` (Decimal, e.g., DECIMAL(10, 2))
+*   `total_cost` (Decimal, e.g., DECIMAL(10, 2))
+*   `importer_user_id` (Foreign Key to `users.id`, Integer)
+*   `description` (Text, Nullable)
+*   `created_at` (Timestamp)
+*   `updated_at` (Timestamp)
+
+**Table: `orders`**
+*   `id` (Primary Key, Auto-increment, Integer)
+*   `order_code` (String, e.g., VARCHAR(50), Unique)
+*   `order_date` (Timestamp)
+*   `seller_user_id` (Foreign Key to `users.id`, Integer)
+*   `total_amount` (Decimal, e.g., DECIMAL(10, 2))
+*   `amount_received` (Decimal, e.g., DECIMAL(10, 2))
+*   `change_amount` (Decimal, e.g., DECIMAL(10, 2))
+*   `total_profit` (Decimal, e.g., DECIMAL(10, 2))
+*   `created_at` (Timestamp)
+*   `updated_at` (Timestamp)
+
+**Table: `order_items`**
+*   `id` (Primary Key, Auto-increment, Integer)
+*   `order_id` (Foreign Key to `orders.id`, Integer)
+*   `product_id` (Foreign Key to `products.id`, Integer)
+*   `quantity` (Integer)
+*   `price_at_sale` (Decimal, e.g., DECIMAL(10, 2))
+*   `cost_at_sale` (Decimal, e.g., DECIMAL(10, 2))
+*   `item_total` (Decimal, e.g., DECIMAL(10, 2))
+*   `item_profit` (Decimal, e.g., DECIMAL(10, 2))
+*   `created_at` (Timestamp)
+*   `updated_at` (Timestamp)

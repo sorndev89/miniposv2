@@ -1,0 +1,11 @@
+Template
+- npm install -D daisyui@latest
+
+Icon
+ - npm install @heroicons/vue
+
+ ຈັດການ sub -menu 
+ npm install flowbite 
+
+ ນຳໃຊ້ ການບັນທຶກຮູບ ໄຟລ 
+  php artisan storage:link

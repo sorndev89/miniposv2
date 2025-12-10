@@ -1,0 +1,547 @@
+**PROJECT_SETUP_SUMMARY.txt (ພາສາລາວ - ລາຍລະອຽດ)**
+
+ເອກະສານນີ້ອະທິບາຍລາຍລະອຽດຂັ້ນຕອນການຕັ້ງຄ່າໂປຣເຈັກ Laravel ແລະ Vue.js MiniPOS2 ຂອງທ່ານ, ລວມທັງການຕິດຕັ້ງເບື້ອງຕົ້ນ, ການເຊື່ອມໂຍງແພັກເກັດ, ແລະການຕັ້ງຄ່າສະເພາະ, ໂດຍເນັ້ນໃສ່ການທໍາງານການສົ່ງອອກ PDF ແລະການແກ້ໄຂບັນຫາ font ຂອງພາສາລາວ.
+
+---
+
+**1. ການເລີ່ມຕົ້ນໂປຣເຈັກ (Laravel & Vue)**
+
+ຂັ້ນຕອນເຫຼົ່ານີ້ສ້າງໂຄງສ້າງພື້ນຖານຂອງໂປຣເຈັກ Laravel ຂອງທ່ານ ແລະຕັ້ງຄ່າສະພາບແວດລ້ອມການພັດທະນາ frontend ດ້ວຍ Node.js ແລະ Vite.
+
+*   **ການສ້າງໂປຣເຈັກ Laravel:**
+    ໃຊ້ Composer ເພື່ອສ້າງໂປຣເຈັກ Laravel ໃໝ່. `MiniPOS2` ແມ່ນຊື່ໄດເຣັກທໍຣີຂອງໂປຣເຈັກ.
+    ```bash
+    composer create-project laravel/laravel MiniPOS2
+    cd MiniPOS2
+    composer install # ຖ້າທ່ານ cloned ໂປຣເຈັກທີ່ມີຢູ່ແລ້ວ, ໃຫ້ແນ່ໃຈວ່າໄດ້ແລ່ນຄຳສັ່ງນີ້
+    ```
+    *ຄໍາອະທິບາຍ:* ຄໍາສັ່ງ `composer create-project` ຈະດາວໂຫຼດ Laravel ລຸ້ນລ່າສຸດ ແລະ dependencies ທັງໝົດ, ຈາກນັ້ນສ້າງໂຄງສ້າງໄດເຣັກທໍຣີພື້ນຖານໃຫ້ທ່ານ. `cd MiniPOS2` ຈະນໍາທ່ານເຂົ້າສູ່ໄດເຣັກທໍຣີໂປຣເຈັກ. `composer install` ໃຊ້ `composer.lock` ເພື່ອຕິດຕັ້ງ dependencies ທີ່ລະບຸຢ່າງຊັດເຈນ, ສໍາຄັນສໍາລັບການຮັບປະກັນເວີຊັນແພັກເກັດທີ່ສອດຄ່ອງກັນໃນສະພາບແວດລ້ອມຕ່າງໆ.
+
+*   **ການຕິດຕັ້ງ Node.js Dependencies:**
+    Node.js dependencies ຖືກກໍານົດໄວ້ໃນ `package.json` ແລະຕິດຕັ້ງດ້ວຍ npm.
+    ```bash
+    npm install
+    ```
+    *ຄໍາອະທິບາຍ:* ຄໍາສັ່ງນີ້ຈະອ່ານໄຟລ໌ `package.json` ແລະດາວໂຫຼດແພັກເກັດ JavaScript ທັງໝົດທີ່ໂປຣເຈັກຕ້ອງການ (ລວມທັງ Vue, Vite, Tailwind CSS, ແລະອື່ນໆ) ໄປຍັງໄດເຣັກທໍຣີ `node_modules/`. ໄຟລ໌ `package-lock.json` ຈະຖືກສ້າງຂຶ້ນ (ຫຼືອັບເດດ) ເພື່ອລັອກເວີຊັນຂອງແພັກເກັດຢ່າງຊັດເຈນ.
+
+*   **ການຕັ້ງຄ່າ Vite ສໍາລັບ Vue.js:**
+    ໄຟລ໌ `vite.config.js` ຈັດການຂະບວນການ build ຂອງ frontend.
+    ```javascript
+    import { defineConfig } from 'vite';
+    import laravel from 'laravel-vite-plugin'; // plugin Laravel ສໍາລັບ Vite
+    import vue from '@vitejs/plugin-vue'; // plugin Vue ສໍາລັບ Vite
+
+    export default defineConfig({
+        plugins: [
+            laravel({
+                input: ['resources/css/app.css', 'resources/js/app.js'],
+                refresh: true, // ເປີດໃຊ້ການ refresh ຂອງ browser ເມື່ອໄຟລ໌ backend ປ່ຽນແປງ
+            }),
+            vue({ // ເພີ່ມ plugin Vue ເພື່ອໃຫ້ Vite ປະມວນຜົນໄຟລ໌ Vue
+                template: {
+                    transformAssetUrls: {
+                        base: null,
+                        includeAbsolute: false,
+                    },
+                },
+            }),
+        ],
+    });
+    ```
+    *ຄໍາອະທິບາຍ:* `laravel-vite-plugin` ຊ່ວຍໃຫ້ Vite ເຮັດວຽກຮ່ວມກັບ Laravel ໂດຍການກໍານົດຈຸດເຂົ້າ (entry points) ຂອງ assets (CSS/JS) ຂອງທ່ານ. `@vitejs/plugin-vue` ແມ່ນສໍາຄັນສໍາລັບການໃຫ້ Vite ເຂົ້າໃຈແລະ compile ໄຟລ໌ `.vue` ດ່ຽວ. `transformAssetUrls` ຈັດການເສັ້ນທາງຂອງ assets ພາຍໃນ templates Vue ຂອງທ່ານ.
+    ຫຼັງຈາກການຕັ້ງຄ່າ, ທ່ານສາມາດເລີ່ມຕົ້ນ server ພັດທະນາ frontend ໄດ້:
+    ```bash
+    npm run dev  # ເລີ່ມຕົ້ນ server ພັດທະນາ Vite ດ້ວຍ Hot Module Replacement (HMR)
+    npm run build # ສ້າງ assets ສໍາລັບການຜະລິດ (minified, optimized)
+    ```
+
+---
+
+**2. ການຕັ້ງຄ່າຖານຂໍ້ມູນ & Migrations**
+
+ຂັ້ນຕອນເຫຼົ່ານີ້ຈັດການການຕັ້ງຄ່າຖານຂໍ້ມູນແລະການສ້າງໂຄງສ້າງຕາຕະລາງຂອງທ່ານ.
+
+*   **ການຕັ້ງຄ່າສະພາບແວດລ້ອມ (`.env`):**
+    ໄຟລ໌ `.env` ບັນຈຸຂໍ້ມູນລັບແລະການຕັ້ງຄ່າສະເພາະສະພາບແວດລ້ອມ. ໃຫ້ແນ່ໃຈວ່າໄດ້ຕັ້ງຄ່າການເຊື່ອມຕໍ່ຖານຂໍ້ມູນຂອງທ່ານຢ່າງຖືກຕ້ອງ.
+    ```env
+    DB_CONNECTION=mysql # ປະເພດຖານຂໍ້ມູນ (e.g., mysql, pgsql, sqlite, sqlsrv)
+    DB_HOST=127.0.0.1   # ທີ່ຢູ່ IP ຂອງ server ຖານຂໍ້ມູນ
+    DB_PORT=3306        # Port ຂອງ server ຖານຂໍ້ມູນ (ປົກກະຕິ 3306 ສໍາລັບ MySQL)
+    DB_DATABASE=minipos2_db # ປ່ຽນແທນດ້ວຍຊື່ຖານຂໍ້ມູນຂອງທ່ານທີ່ສ້າງຂຶ້ນແລ້ວ
+    DB_USERNAME=root      # ປ່ຽນແທນດ້ວຍຊື່ຜູ້ໃຊ້ຖານຂໍ້ມູນຂອງທ່ານ
+    DB_PASSWORD=          # ປ່ຽນແທນດ້ວຍລະຫັດຜ່ານຖານຂໍ້ມູນຂອງທ່ານ (ຫວ່າງເປົ່າຖ້າບໍ່ມີ)
+    ```
+    *ຄໍາອະທິບາຍ:* ການຕັ້ງຄ່າເຫຼົ່ານີ້ບອກ Laravel ວິທີເຊື່ອມຕໍ່ກັບຖານຂໍ້ມູນຂອງທ່ານ. ຖ້າທ່ານປ່ຽນແປງ `.env` ແລະການປ່ຽນແປງບໍ່ສະທ້ອນ, ທ່ານອາດຈະຕ້ອງລຶບ cache ການຕັ້ງຄ່າຂອງ Laravel: `php artisan config:clear`.
+
+*   **ການສ້າງ Migrations:**
+    Migrations ແມ່ນຄ້າຍຄືການຄວບຄຸມເວີຊັນສໍາລັບຖານຂໍ້ມູນຂອງທ່ານ. ພວກມັນອະນຸຍາດໃຫ້ທ່ານກໍານົດ schema ຂອງຖານຂໍ້ມູນຂອງທ່ານໃນ PHP.
+    ```bash
+    php artisan make:migration create_categories_table --create=categories
+    php artisan make:migration create_units_table --create=units
+    php artisan make:migration create_products_table --create=products
+    php artisan make:migration create_stock_imports_table --create=stock_imports
+    php artisan make:migration create_orders_table --create=orders
+    php artisan make:migration create_order_items_table --create=order_items
+    # ... ສ້າງ migrations ສໍາລັບຕາຕະລາງອື່ນໆຂອງທ່ານ
+    ```
+    *ຄໍາອະທິບາຍ:* ຄໍາສັ່ງ `php artisan make:migration` ສ້າງໄຟລ໌ PHP ໃໝ່ໃນໄດເຣັກທໍຣີ `database/migrations/`. ທ່ານຈະເພີ່ມຄໍລໍາຕ່າງໆແລະດັດຊະນີເຂົ້າໃນວິທີ `up()` ແລະ `down()` ຂອງໄຟລ໌ເຫຼົ່ານີ້ເພື່ອສ້າງແລະລົບຕາຕະລາງ.
+
+*   **ການແລ່ນ Migrations:**
+    ນຳໃຊ້ migrations ທີ່ຖືກກໍານົດໄວ້ກັບຖານຂໍ້ມູນຂອງທ່ານ.
+    ```bash
+    php artisan migrate
+    ```
+    *ຄໍາອະທິບາຍ:* ນີ້ຈະແລ່ນວິທີ `up()` ໃນໄຟລ໌ migration ທັງໝົດທີ່ຍັງບໍ່ໄດ້ຖືກແລ່ນ. ຖ້າທ່ານຕ້ອງການສ້າງຖານຂໍ້ມູນໃໝ່ໝົດ ແລະແລ່ນ seeders ພ້ອມກັນ, ໃຫ້ໃຊ້ `php artisan migrate:fresh --seed` (ໃຊ້ດ້ວຍຄວາມລະມັດລະວັງ, ມັນຈະລຶບຂໍ້ມູນທັງໝົດໃນຖານຂໍ້ມູນຂອງທ່ານ).
+
+*   **ການສ້າງ Seeders (ທາງເລືອກ, ສໍາລັບຂໍ້ມູນທົດສອບ):**
+    Seeders ຊ່ວຍໃຫ້ທ່ານປ້ອນຂໍ້ມູນເບື້ອງຕົ້ນຫຼືຂໍ້ມູນທົດສອບເຂົ້າໃນຖານຂໍ້ມູນຂອງທ່ານ.
+    ```bash
+    php artisan make:seeder AdminUserSeeder
+    php artisan make:seeder CategorySeeder
+    php artisan make:seeder UnitSeeder
+    # ... ສ້າງ seeders ສໍາລັບຂໍ້ມູນທົດສອບອື່ນໆ
+    ```
+    *ຄໍາອະທິບາຍ:* ຄໍາສັ່ງນີ້ສ້າງໄຟລ໌ PHP ໃໝ່ໃນ `database/seeders/`. ທ່ານຈະເພີ່ມ logic ການປ້ອນຂໍ້ມູນເຂົ້າໃນວິທີ `run()` ຂອງໄຟລ໌ເຫຼົ່ານີ້.
+
+*   **ການແລ່ນ Seeders:**
+    ປະຕິບັດ seeders ທີ່ຖືກກໍານົດໄວ້.
+    ```bash
+    php artisan db:seed # ນີ້ຈະແລ່ນ DatabaseSeeder, ເຊິ່ງຄວນເອີ້ນ seeders ອື່ນໆຂອງທ່ານ
+    # ຫຼື, ເພື່ອແລ່ນ seeder ສະເພາະ:
+    php artisan db:seed --class=AdminUserSeeder
+    ```
+    *ຄໍາອະທິບາຍ:* `DatabaseSeeder.php` ແມ່ນຈຸດເຂົ້າເລີ່ມຕົ້ນສໍາລັບ seeders. ທ່ານຄວນເອີ້ນ seeders ອື່ນໆຂອງທ່ານຈາກ `DatabaseSeeder` ເພື່ອຈັດການການປ້ອນຂໍ້ມູນຂອງທ່ານຢ່າງມີລະບົບ.
+
+---
+
+**3. ການຕັ້ງຄ່າ Frontend (Vue SPA)**
+
+ສ່ວນນີ້ກວມເອົາການຕັ້ງຄ່າ stack frontend ຂອງທ່ານ, ລວມທັງການຈັດການສະຖານະ, ການ routing, ແລະ styling.
+
+*   **ການຕິດຕັ້ງ Pinia (State Management):**
+    Pinia ແມ່ນຫ້ອງສະໝຸດການຈັດການສະຖານະທີ່ແນະນໍາສໍາລັບ Vue 3. ມັນຊ່ວຍຈັດການຂໍ້ມູນທົ່ວແອັບພລິເຄຊັນຂອງທ່ານ.
+    ```bash
+    npm install pinia
+    ```
+*   **ການຕັ້ງຄ່າ Pinia ໃນ `resources/js/app.js`:**
+    ```javascript
+    import { createApp } from 'vue';
+    import { createPinia } from 'pinia'; // Import Pinia
+    import App from './App.vue';
+    import router from './router'; // ນໍາເຂົ້າ router ຂອງທ່ານ
+
+    const pinia = createPinia(); // ເລີ່ມຕົ້ນ Pinia instance
+    const app = createApp(App); // ສ້າງ Vue app instance
+
+    app.use(pinia); // ບອກ Vue app ໃຫ້ໃຊ້ Pinia
+    app.use(router); // ບອກ Vue app ໃຫ້ໃຊ້ Vue Router
+    app.mount('#app'); // Mount app ຂອງທ່ານໃສ່ອົງປະກອບ HTML ທີ່ມີ ID 'app'
+    ```
+    *ຄໍາອະທິບາຍ:* `app.use(pinia)` ເຮັດໃຫ້ stores Pinia ສາມາດໃຊ້ໄດ້ກັບອົງປະກອບ Vue ທັງໝົດ.
+
+*   **ການສ້າງ Pinia Stores (ຕົວຢ່າງ, `resources/js/stores/api.js`, `resources/js/stores/modal.js`):**
+    ສ້າງໄຟລ໌ store ແຍກຕ່າງຫາກສໍາລັບ logic ທີ່ແຕກຕ່າງກັນເພື່ອຈັດການສະຖານະ.
+    *ຄໍາອະທິບາຍ:* Stores ແຍກຕ່າງຫາກຊ່ວຍຈັດລະບຽບ code ຂອງທ່ານ, ເຮັດໃຫ້ມັນສາມາດນໍາໃຊ້ຄືນໃໝ່ໄດ້ແລະບໍາລຸງຮັກສາງ່າຍຂຶ້ນ. `api.js` ຄວນມີ methods ສໍາລັບການຮ້ອງຂໍ API ທົ່ວໄປ (GET, POST, PUT, DELETE) ແລະ `download` ທີ່ສໍາຄັນສໍາລັບໄຟລ໌. `modal.js` ສາມາດຈັດການສະຖານະຂອງ modal ແລະ alerts.
+
+*   **ການຕິດຕັ້ງ Vue Router:**
+    Vue Router ແມ່ນຫ້ອງສະໝຸດ routing ຢ່າງເປັນທາງການສໍາລັບ Vue.js. ມັນອະນຸຍາດໃຫ້ທ່ານຈັດການ client-side routing.
+    ```bash
+    npm install vue-router@4 # ໃຊ້ @4 ເພື່ອຕິດຕັ້ງ Vue Router ເວີຊັນທີ່ເຂົ້າກັນໄດ້ກັບ Vue 3
+    ```
+*   **ການຕັ້ງຄ່າ Router ໃນ `resources/js/router/index.js`:**
+    ກໍານົດເສັ້ນທາງຂອງແອັບພລິເຄຊັນຂອງທ່ານແລະ map ພວກມັນກັບອົງປະກອບ Vue.
+    ```javascript
+    import { createRouter, createWebHistory } from 'vue-router';
+    import ReportPage from '../pages/Report.vue'; // ນໍາເຂົ້າອົງປະກອບໜ້າລາຍງານ
+
+    const routes = [
+        {
+            path: '/reports', // ເສັ້ນທາງ URL
+            name: 'Report', // ຊື່ເສັ້ນທາງ (ທາງເລືອກ)
+            component: ReportPage, // ອົງປະກອບ Vue ທີ່ແລ່ນເມື່ອເສັ້ນທາງນີ້ຖືກເຂົ້າເຖິງ
+        },
+        // ... ກໍານົດ routes ອື່ນໆຂອງທ່ານທີ່ນີ້
+    ];
+
+    const router = createRouter({
+        history: createWebHistory(), // ໃຊ້ HTML5 History API ສໍາລັບ routing (e.g., example.com/reports)
+        routes, // ບັນຊີລາຍຊື່ຂອງ routes ທີ່ຖືກກໍານົດໄວ້
+    });
+
+    export default router;
+    ```
+    *ຄໍາອະທິບາຍ:* `createWebHistory()` ສ້າງ router history ທີ່ໃຊ້ History API ຂອງ browser ສໍາລັບ URLs ທີ່ສະອາດໂດຍບໍ່ມີ `#`.
+
+*   **ການຕິດຕັ້ງ Tailwind CSS & Flowbite:**
+    Tailwind CSS ແມ່ນ framework CSS ແບບ utility-first ທີ່ຊ່ວຍໃຫ້ທ່ານສ້າງການອອກແບບທີ່ກໍາຫນົດເອງໂດຍກົງໃນ markup ຂອງທ່ານ. Flowbite ແມ່ນຫ້ອງສະໝຸດອົງປະກອບທີ່ສ້າງຂຶ້ນເທິງ Tailwind CSS.
+    ```bash
+    npm install -D tailwindcss postcss autoprefixer flowbite
+    npx tailwindcss init -p # ສ້າງໄຟລ໌ tailwind.config.js ແລະ postcss.config.js
+    ```
+*   **ການຕັ້ງຄ່າ `tailwind.config.js`:**
+    ກໍານົດໄຟລ໌ທີ່ Tailwind ຄວນສະແກນຫາ class names ຂອງມັນ.
+    ```javascript
+    /** @type {import('tailwindcss').Config} */
+    export default {
+      content: [
+        "./index.html",
+        "./resources/**/*.blade.php", // ລວມເອົາໄຟລ໌ Blade ຂອງ Laravel
+        "./resources/**/*.js",
+        "./resources/**/*.vue",
+        "./node_modules/flowbite/**/*.js" // ສໍາຄັນສໍາລັບ Flowbite ເພື່ອໃຫ້ class ຂອງມັນຖືກລວມເຂົ້າ
+      ],
+      theme: {
+        extend: {},
+      },
+      plugins: [
+        require('flowbite/plugin') // ເພີ່ມ plugin Flowbite
+      ],
+    }
+    ```
+    *ຄໍາອະທິບາຍ:* `content` array ບອກ Tailwind CSS ວ່າຄວນຈະສະແກນໄຟລ໌ໃດເພື່ອຊອກຫາ class utility ທີ່ຖືກໃຊ້, ເພື່ອໃຫ້ມັນສາມາດສ້າງ CSS ທີ່ຖືກ optimized (JIT compilation).
+
+*   **ການ Import Tailwind ໃນ `resources/css/app.css`:**
+    ```css
+    @tailwind base;
+    @tailwind components;
+    @tailwind utilities;
+    ```
+    *ຄໍາອະທິບາຍ:* ໄຟລ໌ນີ້ແມ່ນຈຸດເຂົ້າ CSS ຕົ້ນຕໍຂອງທ່ານ. `@tailwind` directives ຖືກແທນທີ່ດ້ວຍ style ພື້ນຖານ, ອົງປະກອບ, ແລະ utilities ຂອງ Tailwind.
+
+*   **ການຕິດຕັ້ງ Heroicons:**
+    Heroicons ສະໜອງຊຸດໄອຄອນ SVG ທີ່ສວຍງາມທີ່ໃຊ້ງ່າຍໃນໂປຣເຈັກ Vue ຂອງທ່ານ.
+    ```bash
+    npm install @heroicons/vue
+    ```
+    *ຄໍາອະທິບາຍ:* ທ່ານສາມາດນໍາເຂົ້າໄອຄອນສະເພາະເຂົ້າໃນອົງປະກອບ Vue ຂອງທ່ານ (ຕົວຢ່າງ, `import { ArrowPathIcon, InboxArrowDownIcon } from '@heroicons/vue/20/solid';`).
+
+*   **Main App Component (`resources/js/App.vue`):**
+    ນີ້ແມ່ນ root component ຂອງແອັບພລິເຄຊັນ Vue ຂອງທ່ານ.
+    ```vue
+    <template>
+        <router-view></router-view> <!-- ນີ້ຈະສະແດງອົງປະກອບທີ່ກົງກັນກັບເສັ້ນທາງປັດຈຸບັນ -->
+    </template>
+    <script setup>
+    // ທ່ານສາມາດເພີ່ມ logic ການຕັ້ງຄ່າທົ່ວໂລກ ຫຼືການຈັດການສະຖານະຢູ່ທີ່ນີ້
+    </script>
+    ```
+    *ຄໍາອະທິບາຍ:* `router-view` ແມ່ນອົງປະກອບບ່ອນທີ່ອົງປະກອບຂອງເສັ້ນທາງປັດຈຸບັນຈະຖືກ render.
+
+*   **Report Page Component (`resources/js/pages/Report.vue`):**
+    ອົງປະກອບນີ້ສະໜອງ UI ສໍາລັບການເບິ່ງແລະການສົ່ງອອກລາຍງານການຂາຍ.
+    *ຄໍາອະທິບາຍ:* ມັນປະກອບດ້ວຍຕົວເລືອກຊ່ວງວັນທີ, ການສະແດງສະຫຼຸບລາຍງານ, ຕາຕະລາງລາຍລະອຽດ, ແລະປຸ່ມຕ່າງໆສໍາລັບການດຶງແລະສົ່ງອອກ PDF. ມັນໃຊ້ `useApiStore` ແລະ `useModalStore` ຈາກ Pinia ສໍາລັບການຈັດການຂໍ້ມູນແລະ UI feedback.
+
+---
+
+**4. ການຕັ້ງຄ່າ Backend API**
+
+Backend API ຂອງທ່ານຈັດການການຮ້ອງຂໍຂໍ້ມູນຈາກ frontend, ປະມວນຜົນຂໍ້ມູນ, ແລະສົ່ງຄືນມັນ.
+
+*   **ການກໍານົດ API Routes (`routes/api.php`):**
+    ໄຟລ໌ `routes/api.php` ຖືກໃຊ້ສໍາລັບການກໍານົດ routes ທີ່ບໍ່ມີສະຖານະ (stateless) ສໍາລັບ API ຂອງທ່ານ, ປົກກະຕິແລ້ວມີ prefix `/api` (ເຊັ່ນ, `/api/reports/sales`).
+    ```php
+    <?php
+    use Illuminate\Support\Facades\Route;
+    use App\Http\Controllers\Api\ReportController; // ນໍາເຂົ້າ controller ຂອງທ່ານ
+
+    // Route ສໍາລັບການດຶງຂໍ້ມູນລາຍງານການຂາຍ (JSON)
+    Route::get('/reports/sales', [ReportController::class, 'getSalesReports']);
+    // Route ສໍາລັບການສົ່ງອອກລາຍງານການຂາຍເປັນ PDF
+    Route::get('/reports/sales/pdf', [ReportController::class, 'exportSalesPdf']);
+    // ... ກໍານົດ routes API ອື່ນໆຂອງທ່ານທີ່ນີ້
+    ```
+    *ຄໍາອະທິບາຍ:* Laravel ຈະເພີ່ມ `api` prefix ໂດຍອັດຕະໂນມັດໃສ່ routes ທີ່ກໍານົດໄວ້ໃນ `api.php`.
+
+*   **ການສ້າງ Controllers (ຕົວຢ່າງ, `app/Http/Controllers/Api/ReportController.php`):**
+    Controllers ໃນ Laravel ຈັດການ logic ຂອງແອັບພລິເຄຊັນ. ພວກມັນຮັບການຮ້ອງຂໍ, ດຶງຂໍ້ມູນ (ຜ່ານ models), ປະມວນຜົນມັນ, ແລະສົ່ງຄືນການຕອບສະຫນອງ.
+    ```bash
+    php artisan make:controller Api/ReportController # ສ້າງ controller ໃນ namespace Api
+    ```
+    *ຄໍາອະທິບາຍ:* ວິທີ `getSalesReports` ດຶງຂໍ້ມູນການຂາຍແລະສົ່ງຄືນມັນເປັນ JSON. ວິທີ `exportSalesPdf` ດຶງຂໍ້ມູນດຽວກັນແຕ່ສ້າງ PDF ຈາກມັນ.
+
+*   **ການກໍານົດ Models (ຕົວຢ່າງ, `app/Models/Order.php`, `app/Models/OrderItem.php`, `app/Models/Product.php`):**
+    Eloquent ORM ຂອງ Laravel ໃຊ້ models ເພື່ອໂຕ້ຕອບກັບຕາຕະລາງຖານຂໍ້ມູນຂອງທ່ານ. ແຕ່ລະ model ປົກກະຕິແລ້ວ map ກັບຕາຕະລາງຖານຂໍ້ມູນດຽວ.
+    ```bash
+    php artisan make:model Order -m # ສ້າງ model Order ແລະໄຟລ໌ migration ທີ່ກ່ຽວຂ້ອງ
+    php artisan make:model OrderItem -m
+    php artisan make:model Product -m
+    # ... ສ້າງ models ອື່ນໆສໍາລັບຕາຕະລາງຂອງທ່ານ
+    ```
+    *ຄໍາອະທິບາຍ:* ທ່ານຈະກໍານົດຄຸນສົມບັດທີ່ສາມາດປ້ອນໄດ້ (`$fillable`), ຄຸນສົມບັດທີ່ຖືກປ້ອງກັນ (`$guarded`), ແລະຄວາມສໍາພັນຂອງຖານຂໍ້ມູນພາຍໃນໄຟລ໌ model ເຫຼົ່ານີ້.
+
+*   **ຄວາມສໍາພັນລະຫວ່າງ Models:**
+    ກໍານົດຄວາມສໍາພັນຂອງຖານຂໍ້ມູນໃນ Eloquent models ຂອງທ່ານ (e.g., `hasMany`, `belongsTo`, `hasOne`, `belongsToMany`).
+    ```php
+    // app/Models/Order.php
+    public function items()
+    {
+        // ຄໍາສັ່ງຊື້ໜຶ່ງສາມາດມີຫຼາຍລາຍການສັ່ງຊື້
+        return $this->hasMany(OrderItem::class);
+    }
+
+    public function seller()
+    {
+        // ຄໍາສັ່ງຊື້ໜຶ່ງເປັນຂອງຜູ້ຂາຍໜຶ່ງ
+        return $this->belongsTo(User::class, 'user_id'); // ສົມມຸດວ່າ 'user_id' ແມ່ນ foreign key ສໍາລັບຜູ້ຂາຍ
+    }
+
+    // app/Models/OrderItem.php
+    public function product()
+    {
+        // ລາຍການສັ່ງຊື້ໜຶ່ງມີສິນຄ້າໜຶ່ງ
+        return $this->belongsTo(Product::class);
+    }
+    ```
+    *ຄໍາອະທິບາຍ:* ຄວາມສໍາພັນເຫຼົ່ານີ້ອະນຸຍາດໃຫ້ທ່ານດຶງຂໍ້ມູນທີ່ກ່ຽວຂ້ອງໄດ້ຢ່າງງ່າຍດາຍ (ເຊັ່ນ, `Order::with(['items.product', 'seller'])`) ເຊິ່ງຊ່ວຍຫຼຸດຜ່ອນຈໍານວນ queries ທີ່ທ່ານຕ້ອງຂຽນເອງ.
+
+---
+
+**5. ການສົ່ງອອກ PDF ດ້ວຍ Dompdf**
+
+ສ່ວນນີ້ແມ່ນສຸມໃສ່ການຕັ້ງຄ່າແລະການນໍາໃຊ້ແພັກເກັດ `barryvdh/laravel-dompdf` ເພື່ອສ້າງລາຍງານ PDF, ໂດຍສະເພາະການແກ້ໄຂບັນຫາການສະແດງ font ພາສາລາວ.
+
+*   **ການຕິດຕັ້ງ `barryvdh/laravel-dompdf`:**
+    ນີ້ແມ່ນ wrapper ສໍາລັບ Dompdf, ເຊິ່ງເປັນຫ້ອງສະໝຸດ PHP ສໍາລັບການປ່ຽນ HTML ເປັນ PDF.
+    ```bash
+    composer require barryvdh/laravel-dompdf
+    ```
+*   **ການເຜີຍແຜ່ການຕັ້ງຄ່າ:**
+    ການເຜີຍແຜ່ໄຟລ໌ການຕັ້ງຄ່າອະນຸຍາດໃຫ້ທ່ານປັບແຕ່ງການຕັ້ງຄ່າ Dompdf ໄດ້.
+    ```bash
+    php artisan vendor:publish --provider="Barryvdh\DomPDF\ServiceProvider" --tag="config"
+    ```
+    *ຄໍາອະທິບາຍ:* ຄໍາສັ່ງນີ້ຈະສ້າງໄຟລ໌ `config/dompdf.php` ໃນໄດເຣັກທໍຣີ `config/` ຂອງທ່ານ.
+
+*   **ການຕັ້ງຄ່າ Font ສໍາລັບພາສາລາວ (NotoSansLaoLooped):**
+    ນີ້ແມ່ນຂັ້ນຕອນທີ່ສໍາຄັນສໍາລັບການສະແດງຕົວອັກສອນທີ່ບໍ່ແມ່ນພາສາລາຕິນເຊັ່ນພາສາລາວ.
+
+    *   **ການວາງໄຟລ໌ Font:**
+        ໃຫ້ແນ່ໃຈວ່າໄຟລ໌ font `NotoSansLaoLooped.ttf` ຂອງທ່ານຖືກວາງໄວ້ໃນໄດເຣັກທໍຣີ `storage/fonts/`. ທ່ານອາດຈະຄັດລອກມັນຈາກ `resources/fonts/` ໄປຍັງ `storage/fonts/`.
+        ```bash
+        cp resources/fonts/NotoSansLaoLooped-Regular.ttf storage/fonts/NotoSansLaoLooped.ttf
+        ```
+        *ຄໍາອະທິບາຍ:* `storage/fonts/` ແມ່ນໄດເຣັກທໍຣີທີ່ `dompdf` ຖືກຕັ້ງຄ່າໃຫ້ຊອກຫາ fonts.
+
+    *   **ການປັບປ່ຽນ `config/dompdf.php`:**
+        ແກ້ໄຂໄຟລ໌ `config/dompdf.php` ເພື່ອຕັ້ງຄ່າເສັ້ນທາງ fonts ແລະລະບຸ font ເລີ່ມຕົ້ນຂອງທ່ານ.
+        ```php
+        // config/dompdf.php
+        'show_warnings' => false, // ຕັ້ງເປັນ true ສໍາລັບການດີບັກເພື່ອເບິ່ງຂໍ້ຜິດພາດຂອງ Dompdf, ແລ້ວປ່ຽນກັບຄືນເປັນ false ເມື່ອແລ້ວ
+        'options' => [
+            'font_dir' => storage_path('fonts'), // ໄດເຣັກທໍຣີບ່ອນທີ່ Dompdf ຈະຊອກຫາແລະເກັບ fonts
+            'font_cache' => storage_path('fonts'), // ໄດເຣັກທໍຣີສໍາລັບ font metrics ທີ່ຖືກ cache ໄວ້
+            'default_font' => 'NotoSansLaoLooped', // ຊື່ font family ທີ່ Dompdf ຈະໃຊ້ເປັນຄ່າເລີ່ມຕົ້ນ
+            'temp_dir' => sys_get_temp_dir(), // ໃຫ້ແນ່ໃຈວ່າໄດເຣັກທໍຣີຊົ່ວຄາວນີ້ສາມາດຂຽນໄດ້
+            'chroot' => realpath(base_path()), // ອະນຸຍາດໃຫ້ Dompdf ເຂົ້າເຖິງໄຟລ໌ໃນໂປຣເຈັກຂອງທ່ານ
+            'enable_remote' => false, // ປົກກະຕິແລ້ວຄວນຮັກສາເປັນ false ເພື່ອຄວາມປອດໄພ, ເວັ້ນເສຍແຕ່ວ່າທ່ານຕ້ອງການໂຫຼດຊັບພະຍາກອນພາຍນອກ
+            // ... ທາງເລືອກອື່ນໆ
+        ],
+        ```
+        *ຄໍາອະທິບາຍ:* ການຕັ້ງຄ່າເຫຼົ່ານີ້ບອກ Dompdf ບ່ອນທີ່ຈະຊອກຫາ fonts ຂອງທ່ານແລະ font ໃດທີ່ຈະໃຊ້ເປັນຄ່າເລີ່ມຕົ້ນ. `chroot` ແມ່ນສໍາຄັນສໍາລັບການໃຫ້ Dompdf ເຂົ້າເຖິງໄຟລ໌ພາຍໃນໂປຣເຈັກຂອງທ່ານ.
+
+    *   **ຂັ້ນຕອນສໍາຄັນ (ການຝັງ Font ໃນ Blade View):**
+        ເຖິງແມ່ນວ່າ Dompdf ຈະຖືກຕັ້ງຄ່າໃຫ້ໃຊ້ `default_font`, ມັນອາດຈະມີບັນຫາໃນການຊອກຫາຫຼືຝັງ font ທີ່ກໍາຫນົດເອງ, ໂດຍສະເພາະສໍາລັບຕົວອັກສອນທີ່ບໍ່ແມ່ນພາສາລາຕິນ. ການເພີ່ມກົດລະບຽບ `@font-face` ໂດຍກົງໃນ CSS ຂອງ Blade view ຈະບັງຄັບໃຫ້ Dompdf ຝັງ font.
+        ```html
+        <!-- resources/views/sales_report_pdf.blade.php -->
+        <style>
+            @font-face {
+                font-family: 'NotoSansLaoLooped'; // ຕ້ອງກົງກັບ 'default_font' ທີ່ທ່ານຕັ້ງຄ່າ
+                src: url("{{ storage_path('fonts/NotoSansLaoLooped.ttf') }}") format('truetype');
+                font-weight: normal;
+                font-style: normal;
+            }
+            body {
+                font-family: 'NotoSansLaoLooped', sans-serif; // ໃຊ້ font family ທີ່ກໍານົດໄວ້
+                font-size: 10pt;
+            }
+            /* ... CSS ທີ່ເຫຼືອຂອງທ່ານສໍາລັບຕາຕະລາງ, ແລະອື່ນໆ */
+        </style>
+        ```
+        *ຄໍາອະທິບາຍ:* ການໃຊ້ `storage_path('fonts/NotoSansLaoLooped.ttf')` ໃນ `src: url(...)` ສະຫນອງເສັ້ນທາງ tuyệt đối ໄປຍັງໄຟລ໌ font, ເຊິ່ງຊ່ວຍ Dompdf ໃຫ້ຊອກຫາແລະຝັງມັນ. ນີ້ເປັນສິ່ງສໍາຄັນຫຼາຍເມື່ອເຄື່ອງມືການສ້າງ font metrics CLI ບໍ່ເຮັດວຽກ.
+
+*   **ການສ້າງ Blade View ສໍາລັບ PDF (`resources/views/sales_report_pdf.blade.php`):**
+    ໄຟລ໌ນີ້ແມ່ນແມ່ແບບ HTML ທີ່ Dompdf ຈະໃຊ້ເພື່ອສ້າງ PDF.
+    *ຄໍາອະທິບາຍ:* ອອກແບບ layout ຂອງລາຍງານຂອງທ່ານໂດຍໃຊ້ HTML, CSS (ພາຍໃນ `<style>` tag ຫຼື linked external CSS), ແລະ Blade templating ສໍາລັບການສະແດງຂໍ້ມູນແບບໄດນາມິກທີ່ສົ່ງມາຈາກ controller.
+
+*   **ການປະຕິບັດວິທີ `exportSalesPdf` ໃນ `app/Http/Controllers/Api/ReportController.php`:**
+    ວິທີ controller ນີ້ດຶງຂໍ້ມູນທີ່ຕ້ອງການ, ຈັດຮູບແບບມັນ, ແລະຫຼັງຈາກນັ້ນໃຊ້ facade `Pdf` ຂອງ `barryvdh/laravel-dompdf` ເພື່ອສ້າງ PDF.
+    ```php
+    // app/Http/Controllers/Api/ReportController.php
+    use Barryvdh\DomPDF\Facade\Pdf;
+    use Illuminate\Http\Request;
+    use Carbon\Carbon;
+    use App\Models\Order;
+    // ...
+
+    public function exportSalesPdf(Request $request)
+    {
+        // 1. ດຶງວັນທີເລີ່ມຕົ້ນແລະວັນທີສິ້ນສຸດຈາກ request
+        $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
+        $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
+
+        // 2. ດຶງຂໍ້ມູນຄໍາສັ່ງຊື້ຈາກຖານຂໍ້ມູນພາຍໃນຊ່ວງວັນທີ
+        $orders = Order::with(['items.product', 'seller']) // ໂຫຼດຄວາມສໍາພັນທີ່ຈໍາເປັນ
+            ->whereBetween('order_date', [$startDate, $endDate])
+            ->orderBy('order_date', 'desc')
+            ->get();
+
+        // 3. ຄິດໄລ່ສະຫຼຸບລາຍງານ
+        $totalSales = $orders->sum('total_amount');
+        $totalOrders = $orders->count();
+        $totalProfit = $orders->sum('total_profit'); // ສົມມຸດວ່າ total_profit ຖືກເກັບໄວ້ຢ່າງຖືກຕ້ອງ
+
+        // 4. ຈັດຮູບແບບຂໍ້ມູນລາຍລະອຽດສໍາລັບລາຍງານ
+        $formattedReports = $orders->map(function ($order) {
+            return [
+                'order_id' => $order->order_code,
+                'seller' => $order->seller->name ?? 'N/A',
+                'items' => $order->items->map(function ($item) {
+                    return [
+                        'product_id' => $item->product_id,
+                        'name' => $item->product->name ?? 'N/A',
+                        'quantity' => $item->quantity,
+                        'price' => $item->price_at_sale,
+                        'cost' => $item->cost_at_sale,
+                    ];
+                }),
+                'total_amount' => $order->total_amount,
+                'amount_received' => $order->amount_received,
+                'change_amount' => $order->change_amount,
+                'profit' => $order->total_profit,
+                'sale_date' => Carbon::parse($order->order_date)->format('Y-m-d H:i:s'),
+            ];
+        });
+
+        // 5. ລວມຂໍ້ມູນສໍາລັບ Blade view
+        $summary = [
+            'total_sales' => $totalSales,
+            'total_orders' => $totalOrders,
+            'total_profit' => $totalProfit,
+        ];
+
+        $data = [
+            'startDate' => $startDate->format('d/m/Y'),
+            'endDate' => $endDate->format('d/m/Y'),
+            'summary' => $summary,
+            'reports' => $formattedReports,
+        ];
+
+        // 6. ໂຫຼດ Blade view ເຂົ້າໃນ Dompdf ແລະສ້າງ PDF
+        $pdf = PDF::loadView('sales_report_pdf', $data);
+
+        // 7. ສົ່ງຄືນ PDF ເປັນການດາວໂຫຼດ
+        return $pdf->download('sales_report_' . $startDate->format('Y-m-d') . '_to_' . $endDate->format('Y-m-d') . '.pdf');
+    }
+    ```
+    *ຄໍາອະທິບາຍ:* ວິທີນີ້ເປັນຫົວໃຈສໍາຄັນຂອງການສ້າງ PDF. ມັນປະສານງານການດຶງຂໍ້ມູນ, ການຈັດການ, ແລະການສົ່ງຄືນໄຟລ໌ PDF.
+
+---
+
+**6. ການເຊື່ອມໂຍງ Frontend PDF (`resources/js/pages/Report.vue` & `resources/js/stores/api.js`)**
+
+ສ່ວນນີ້ອະທິບາຍວິທີທີ່ frontend ຂອງທ່ານກະຕຸ້ນການສ້າງ PDF ຈາກ backend ແລະຈັດການການດາວໂຫຼດ.
+
+*   **`resources/js/stores/api.js` (API Store):**
+    `useApiStore` ຂອງ Pinia ຄວນມີວິທີ `download` ໂດຍສະເພາະທີ່ຖືກອອກແບບມາສໍາລັບການດາວໂຫຼດໄຟລ໌.
+    ```javascript
+    // resources/js/stores/api.js
+    import { defineStore } from 'pinia';
+    import axios from 'axios';
+
+    export const useApiStore = defineStore('api', {
+        state: () => ({
+            loadingStates: {},
+            error: null,
+            baseUrl: '/api',
+            globalConfig: {
+                appName: 'MiniPOS',
+                currencySymbol: '₭',
+            },
+        }),
+        actions: {
+            // ... (methods ອື່ນໆເຊັ່ນ formatNumber, formatDate, request, fetch, post, put, destroy)
+
+            async download(endpoint, filename = 'download', loadingKey = 'global') {
+                this.setLoading(loadingKey, true);
+                this.clearError();
+                try {
+                    const url = `${this.baseUrl}${endpoint}`;
+                    const response = await axios({
+                        method: 'get',
+                        url: url,
+                        responseType: 'blob', // ສໍາຄັນ: ບອກ Axios ວ່າຄາດຫວັງຂໍ້ມູນ binary (blob)
+                    });
+
+                    // ກະຕຸ້ນການດາວໂຫຼດດ້ວຍຕົນເອງໃນ browser
+                    const blob = new Blob([response.data]); // ສ້າງ Blob ຈາກຂໍ້ມູນທີ່ໄດ້ຮັບ
+                    const link = document.createElement('a'); // ສ້າງອົງປະກອບ link ຊົ່ວຄາວ
+                    link.href = URL.createObjectURL(blob); // ສ້າງ URL object ສໍາລັບ Blob
+                    link.download = filename; // ຕັ້ງຊື່ໄຟລ໌ສໍາລັບການດາວໂຫຼດ
+                    document.body.appendChild(link); // ເພີ່ມ link ເຂົ້າໃນ DOM ຊົ່ວຄາວ
+                    link.click(); // ຄລິກ link ເພື່ອກະຕຸ້ນການດາວໂຫຼດ
+                    document.body.removeChild(link); // ລຶບ link ອອກຈາກ DOM
+                    URL.revokeObjectURL(link.href); // ປ່ອຍຊັບພະຍາກອນ URL object
+
+                    return true;
+                } catch (err) {
+                    const errorMessage = err.response?.data?.message || err.message || 'ເກີດຂໍ້ຜິດພາດໃນການດາວໂຫຼດໄຟລ໌.';
+                    this.setError(errorMessage);
+                    throw err;
+                } finally {
+                    this.setLoading(loadingKey, false);
+                }
+            },
+        },
+    });
+    ```
+    *ຄໍາອະທິບາຍ:* ວິທີ `download` ແມ່ນສໍາຄັນ. ການຕັ້ງຄ່າ `responseType: 'blob'` ບອກ Axios ໃຫ້ຈັດການການຕອບສະຫນອງເປັນຂໍ້ມູນ binary, ບໍ່ແມ່ນ JSON. ຫຼັງຈາກນັ້ນ, code ຈະສ້າງ object `Blob`, ສ້າງ URL ຊົ່ວຄາວ, ແລະກະຕຸ້ນການດາວໂຫຼດຜ່ານການສ້າງ `<a>` element ແລ້ວຄລິກມັນແບບ programmatic.
+
+*   **`resources/js/pages/Report.vue` (Report Page Component):**
+    ປຸ່ມສົ່ງອອກ PDF ໃນ UI ຂອງທ່ານຈະເອີ້ນວິທີ `exportPdf` ນີ້.
+    ```javascript
+    // resources/js/pages/Report.vue
+    import { ref, onMounted } from 'vue';
+    import { ArrowPathIcon, InboxArrowDownIcon } from '@heroicons/vue/20/solid';
+    import { useModalStore } from '../stores/modal';
+    import { useApiStore } from '../stores/api';
+
+    const apiStore = useApiStore();
+    const modalStore = useModalStore();
+
+    const startDate = ref(/* ... */);
+    const endDate = ref(/* ... */);
+    // ... (other refs like salesReports, totalSales, etc.)
+
+    const exportPdf = async () => {
+        // 1. ການກວດສອບວັນທີ
+        if (!startDate.value || !endDate.value) {
+            modalStore.showErrorAlert('ກະລຸນາເລືອກວັນທີເລີ່ມຕົ້ນ ແລະ ວັນທີສິ້ນສຸດ', 'ຂໍ້ຜິດພາດ');
+            return;
+        }
+
+        try {
+            // 2. ກໍານົດຊື່ໄຟລ໌ແລະສ້າງ endpoint URL ດ້ວຍ query parameters
+            const filename = `sales_report_${startDate.value}_to_${endDate.value}.pdf`;
+            const endpoint = `/reports/sales/pdf?start_date=${startDate.value}&end_date=${endDate.value}`;
+
+            // 3. ເອີ້ນວິທີ apiStore.download ເພື່ອດາວໂຫຼດ PDF
+            await apiStore.download(endpoint, filename, 'sales_report_pdf_export');
+
+            // 4. ສະແດງຂໍ້ຄວາມສໍາເລັດ
+            modalStore.showSuccessAlert('ລາຍງານ PDF ຖືກສົ່ງອອກສຳເລັດ!', 'ສຳເລັດ', null, 1000);
+        } catch (error) {
+            // 5. ຈັດການຂໍ້ຜິດພາດ
+            modalStore.showErrorAlert(apiStore.error || 'ເກີດຂໍ້ຜິດພາດໃນການສົ່ງອອກ PDF', 'ຂໍ້ຜິດພາດ');
+        }
+    };
+
+    onMounted(() => {
+        // ໂຫຼດລາຍງານເມື່ອອົງປະກອບຖືກ mount
+        // fetchReports();
+    });
+    ```
+    *ຄໍາອະທິບາຍ:* ວິທີ `exportPdf` ຖືກຜູກມັດກັບປຸ່ມ "ສົ່ງອອກ PDF". ມັນສ້າງ URL endpoint ຢ່າງຖືກຕ້ອງດ້ວຍ query parameters ສໍາລັບວັນທີເລີ່ມຕົ້ນແລະສິ້ນສຸດ, ຈາກນັ້ນເອີ້ນ `apiStore.download` ເພື່ອເລີ່ມຕົ້ນຂະບວນການດາວໂຫຼດ.
+
+---
+
+ບົດສະຫຼຸບທີ່ລະອຽດນີ້ກວມເອົາຂັ້ນຕອນສໍາຄັນແລະການຕັ້ງຄ່າສໍາລັບການຕັ້ງຄ່າໂປຣເຈັກ MiniPOS2 ຂອງທ່ານດ້ວຍ Laravel, Vue, Pinia, Tailwind CSS, ແລະການທໍາງານການສົ່ງອອກ PDF ໂດຍໃຊ້ Dompdf, ໂດຍສະເພາະແມ່ນການແກ້ໄຂການສະແດງຟອນພາສາລາວ.

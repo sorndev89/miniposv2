@@ -1,0 +1,84 @@
+Role: Act as a Senior Full Stack Web Developer with 10+ years of experience in teaching. Goal: Create a project structure and code guidelines for a Point of Sale (POS) system tailored for beginners. Tech Stack:
+
+Backend: Laravel 12 (API Mode), MySQL.
+
+Frontend: Vue.js 3 (Composition API <script setup>), Vite.
+
+State Management: Pinia.
+
+Routing: Vue Router.
+
+Key Libraries: axios (with JWT), vue-cleave-component (number formatting), vue-select (dropdowns), flatpickr (date range).
+
+Project Requirements: The system must be clean, scalable, and easy to understand for students. Avoid over-engineering.
+
+1. Database Schema (Simplified for Learning)
+Design a relational database with these specific tables:
+
+users: id, name, email, password, roles (admin/staff).
+
+categories: id, name.
+
+products: id, category_id, name, image, price (sell), cost (buy), stock_qty, barcode.
+
+orders: id, user_id, total_amount, received_amount, change_amount, payment_status, created_at.
+
+order_details: id, order_id, product_id, price, quantity, total.
+
+transactions: id, product_id, type (import/sale), amount, description, created_at (Used for tracking stock movement).
+
+2. Frontend Pages & Features Logic
+Analyze and structure the Vue 3 frontend as follows:
+
+A. Authentication
+
+Login Page: Simple form with Email/Password. Use JWT via API. Store token in localStorage & Pinia AuthStore.
+
+B. Product Management (CRUD)
+
+Page: /products
+
+Features: List products with pagination. Add/Edit Modal.
+
+Libraries: Use vue-select for selecting Categories. Use vue-cleave-component for Price/Cost inputs (formatting currency).
+
+C. Stock Management
+
+Page: /stock/import
+
+Features: A form to select a product and add quantity.
+
+Logic: Create a transaction record (type: 'import') and increment products.stock_qty.
+
+D. POS Page (The Core Feature)
+
+Page: /pos
+
+Layout:
+
+Left: Product Grid (Image, Name, Stock, Price) with a Search Bar.
+
+Right: Cart Section (Selected items list, Quantity adjustment, Total calculation).
+
+State Management: Use Pinia (CartStore) to handle: addToCart, removeFromCart, increment/decrement, clearCart, and totalPrice computed property.
+
+Checkout: A button to submit the order.
+
+Backend Logic: Create Order, create OrderDetails, create Transaction (type: 'sale'), and decrement products.stock_qty.
+
+E. Reports & History
+
+Page: /reports
+
+Features: View list of sold orders.
+
+Libraries: Use flatpickr to filter orders by Date Range (Start Date - End Date).
+
+3. Coding Guidelines for Teaching
+Laravel: Use Resource Controllers and Form Requests for validation. Keep logic in Services or Controllers (keep it simple).
+
+Vue: Strictly use Composition API (<script setup>).
+
+Code Style: Clean, commented code explaining why we use specific libraries (e.g., "Why use Pinia here?").
+
+Task: Please generate the Project Folder Structure, API Routes List (api.php), and the Pinia useCartStore code based on the requirements above.
